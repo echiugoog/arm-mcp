@@ -14,7 +14,7 @@ This MCP server equips AI assistants with specialized tools for Arm development:
 
 ## Pre-Built Image
 
-If you would prefer to use a pre-built, multi-arch image, the official image can be found in Docker Hub here: armswdev/arm-mcp:latest
+If you would prefer to use a pre-built, multi-arch image, the official image can be found in Docker Hub here: `armswdev/arm-mcp:latest`
 
 ## Prerequisites
 
