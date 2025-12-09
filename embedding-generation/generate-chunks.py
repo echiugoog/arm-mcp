@@ -13,6 +13,8 @@
 # limitations under the License.
 
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 from bs4 import BeautifulSoup
 import argparse
 import sys, os
@@ -22,6 +24,26 @@ import yaml
 import csv
 import datetime
 import json
+
+# Create a session with retry logic for resilient HTTP requests
+def create_retry_session(retries=5, backoff_factor=1, status_forcelist=(500, 502, 503, 504)):
+    """Create a requests session with automatic retry on failures."""
+    session = requests.Session()
+    retry = Retry(
+        total=retries,
+        read=retries,
+        connect=retries,
+        backoff_factor=backoff_factor,
+        status_forcelist=status_forcelist,
+        allowed_methods=["HEAD", "GET", "OPTIONS"]
+    )
+    adapter = HTTPAdapter(max_retries=retry)
+    session.mount("http://", adapter)
+    session.mount("https://", adapter)
+    return session
+
+# Global session for all HTTP requests
+http_session = create_retry_session()
 
 # Boto3 for S3 operations
 import boto3
@@ -145,7 +167,7 @@ def createEcosystemDashboardChunks():
 
     # Obtain all
     url = "https://www.arm.com/developer-hub/ecosystem-dashboard/"
-    response = requests.get(url)
+    response = http_session.get(url, timeout=60)
     soup = BeautifulSoup(response.text, 'html.parser')
     rows = soup.find_all('tr', class_=['main-sw-row']) 
     for row in rows:
@@ -333,7 +355,7 @@ def processLearningPath(url,type):
 
 
 
-        response = requests.get(url)
+        response = http_session.get(url, timeout=60)
         soup = BeautifulSoup(response.text, 'html.parser')
         for link in soup.find_all(class_='inner-learning-path-navbar-element'):
             #Ignore mobile links
@@ -363,7 +385,7 @@ def processLearningPath(url,type):
     
     
     elif type == "Install Guide":
-        igs_response = requests.get(site_link+url)
+        igs_response = http_session.get(site_link+url, timeout=60)
         igs_soup = BeautifulSoup(igs_response.text, 'html.parser')
         for ig_card in igs_soup.find_all(class_="tool-card"):
             ig_rel_url = ig_card.get('link')
@@ -371,7 +393,7 @@ def processLearningPath(url,type):
 
             
             
-            ig_response = requests.get(ig_url)
+            ig_response = http_session.get(ig_url, timeout=60)
             ig_soup = BeautifulSoup(ig_response.text, 'html.parser')
             
             # obtain title of Install Guide
@@ -400,7 +422,7 @@ def processLearningPath(url,type):
 def createLearningPathChunks():
     # Find all categories to iterate over
     learn_url = "https://learn.arm.com/"
-    response = requests.get(learn_url)
+    response = http_session.get(learn_url, timeout=60)
     soup = BeautifulSoup(response.text, 'html.parser')
     for card in soup.find_all(class_='main-topic-card'):
         if 'tool-install' == card.get('id'): 
@@ -409,7 +431,7 @@ def createLearningPathChunks():
             
         else:         
             cat_rel_path = card.get('link')
-            cat_response = requests.get(learn_url+cat_rel_path)
+            cat_response = http_session.get(learn_url+cat_rel_path, timeout=60)
             cat_soup = BeautifulSoup(cat_response.text, 'html.parser')
             for lp_card in cat_soup.find_all(class_="path-card"):
                 lp_url = learn_url + lp_card.get('link')
@@ -473,7 +495,7 @@ def getMarkdownGitHubURLsFromPage(url):
 
 def URLIsValidCheck(url):
     try:
-        response = requests.get(url)
+        response = http_session.get(url, timeout=60)
         response.raise_for_status()  # Ensure we got a valid response
         return True
     except requests.exceptions.HTTPError as http_err:
@@ -491,7 +513,7 @@ def URLIsValidCheck(url):
 
 
 def obtainMarkdownContentFromGitHubMDFile(gh_url):
-    response = requests.get(gh_url)
+    response = http_session.get(gh_url, timeout=60)
     response.raise_for_status()  # Ensure we got a valid response
     md_content = response.text
 
