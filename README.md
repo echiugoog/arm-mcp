@@ -34,31 +34,32 @@ docker buildx build --platform linux/arm64,linux/amd64 -f mcp-local/Dockerfile -
 For a single-platform build (faster):
 
 ```bash
-docker buildx build -f mcp-local/Dockerfile -t arm-mcp mcp-local
+# NOTE - building locally involves generating the Knowledge Base semantic embeddings and can take up to 20 minutes
+docker buildx build -f mcp-local/Dockerfile -t arm-mcp mcp-local --load
 ```
 
 ### 2. Configure Your MCP Client
 
 Choose the configuration that matches your MCP client:
 
-#### Cursor
+#### Claude Code
 
 Add to `.mcp.json` in your project:
 
 ```json
 {
-    "mcpServers": {
-        "arm-mcp": {
-            "command": "docker",
-            "args": [
-                "run",
-                "--rm",
-                "-i",
-                "-v", "/path/to/your/workspace:/workspace",
-                "arm-mcp"
-            ]
-        }
+  "mcpServers": {
+    "arm-mcp": {
+      "command": "docker",
+      "args": [
+        "run",
+        "--rm",
+        "-i",
+        "-v", "/path/to/your/workspace:/workspace",
+        "arm-mcp"
+      ]
     }
+  }
 }
 ```
 
