@@ -41,6 +41,27 @@ docker buildx build -f mcp-local/Dockerfile -t arm-mcp mcp-local
 
 Choose the configuration that matches your MCP client:
 
+#### Cursor
+
+Add to `.mcp.json` in your project:
+
+```json
+{
+    "mcpServers": {
+        "arm-mcp": {
+            "command": "docker",
+            "args": [
+                "run",
+                "--rm",
+                "-i",
+                "-v", "/path/to/your/workspace:/workspace",
+                "arm-mcp"
+            ]
+        }
+    }
+}
+```
+
 #### GitHub Copilot (VS Code)
 
 Add to `.vscode/mcp.json` in your project, or globally at `~/Library/Application Support/Code/User/mcp.json` (macOS):
