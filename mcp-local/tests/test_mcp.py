@@ -1,4 +1,4 @@
-# Copyright © 2025, Arm Limited and Contributors. All rights reserved.
+# Copyright © 2026, Arm Limited and Contributors. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -82,11 +82,11 @@ def _read_mcp_message(sock, timeout: float = 10.0) -> dict:
 
 def test_mcp_stdio_transport_responds():
     image = os.getenv("MCP_IMAGE", "arm-mcp:latest")
-    constants.REPO_ROOT = Path(__file__).resolve().parents[1]
-    print("\n***repo root: ", constants.REPO_ROOT )
+    repo_root = Path(__file__).resolve().parents[1]
+    print("\n***repo root: ", repo_root)
     with (
         DockerContainer(image)
-        .with_volume_mapping(str(constants.REPO_ROOT ), "/workspace")
+        .with_volume_mapping(str(repo_root), "/workspace")
         .with_kwargs(stdin_open=True, tty=False)
     ) as container:
         wait_for_logs(container, "Starting MCP server", timeout=60)
