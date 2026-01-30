@@ -119,6 +119,19 @@ After updating the configuration, restart your MCP client to load the Arm MCP se
   - `Dockerfile`: Multi-stage Docker build
 - **`embedding-generation/`**: Scripts for regenerating the knowledge base from source documents
 
+## Integration Testing
+
+### Pre-requisites
+
+- Build the mcp server docker image
+- Install the required test packages using - `pip install -r tests/requirements.txt`
+
+### Testing Steps
+
+- Run the test script - `python -m pytest -s tests/test_mcp.py`
+- Check if following 2 docker containers have started - **mcp server** & **testcontainer**
+- All tests should pass without any errors. Warnings can be ignored.
+
 ## Troubleshooting
 
 ### Accessing the Container Shell
