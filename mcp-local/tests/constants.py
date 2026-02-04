@@ -74,11 +74,11 @@ CHECK_SKOPEO_REQUEST = {
                 },
             },
         }
-
+# Fields Architecture, Os and Status are asserted in test to avoid mismatches due to dynamic fields
 EXPECTED_CHECK_SKOPEO_RESPONSE = {
   "status": "ok",
   "code": 0,
-  "stdout": "{\n    \"Name\": \"docker.io/armswdev/arm-mcp\",\n    \"Digest\": \"sha256:dab8aea984074c48c011fe2a7171c2f37ac7403738e0641b0ff99eee384621ea\",\n    \"RepoTags\": [\n        \"latest\"\n    ],\n    \"Created\": \"2025-11-07T00:10:00.848837841Z\",\n    \"DockerVersion\": \"\",\n    \"Labels\": {\n        \"org.opencontainers.image.ref.name\": \"ubuntu\",\n        \"org.opencontainers.image.version\": \"24.04\"\n    },\n    \"Architecture\": \"arm64\",\n    \"Os\": \"linux\",\n    \"Layers\": [\n        \"sha256:b8a35db46e38ce87d4e743e1265ff436ed36e01d23246b24a1cbbeaae18ec432\",\n        \"sha256:aee89bc0d0e3194f35090f6d190868784dee4057f910a6af3a7c68cba5cd2c46\",\n        \"sha256:569ccd11958806cb03ec8fa1575bea7b0b45c290c1045b9b0ecf6fa354da53d7\",\n        \"sha256:4f13b03e4ce3d1ab958df1f4f3e0edcb3a276fd0c5bc08406ebc978811a172f6\",\n        \"sha256:2c0e15ad1ba57372508f93cf701e2bdc90600144ce2c8632264f4419976c55bf\",\n        \"sha256:0eb217d3f4f4dcd7419cfcb70a77645d271ed768e88ef136ab49abd56bf478e3\",\n        \"sha256:4f4fb700ef54461cfa02571ae0db9a0dc1e0cdb5577484a6d75e68dc38e8acc1\"\n    ],\n    \"LayersData\": [\n        {\n            \"MIMEType\": \"application/vnd.oci.image.layer.v1.tar+gzip\",\n            \"Digest\": \"sha256:b8a35db46e38ce87d4e743e1265ff436ed36e01d23246b24a1cbbeaae18ec432\",\n            \"Size\": 28861712,\n            \"Annotations\": null\n        },\n        {\n            \"MIMEType\": \"application/vnd.oci.image.layer.v1.tar+gzip\",\n            \"Digest\": \"sha256:aee89bc0d0e3194f35090f6d190868784dee4057f910a6af3a7c68cba5cd2c46\",\n            \"Size\": 142025708,\n            \"Annotations\": null\n        },\n        {\n            \"MIMEType\": \"application/vnd.oci.image.layer.v1.tar+gzip\",\n            \"Digest\": \"sha256:569ccd11958806cb03ec8fa1575bea7b0b45c290c1045b9b0ecf6fa354da53d7\",\n            \"Size\": 107240731,\n            \"Annotations\": null\n        },\n        {\n            \"MIMEType\": \"application/vnd.oci.image.layer.v1.tar+gzip\",\n            \"Digest\": \"sha256:4f13b03e4ce3d1ab958df1f4f3e0edcb3a276fd0c5bc08406ebc978811a172f6\",\n            \"Size\": 1180,\n            \"Annotations\": null\n        },\n        {\n            \"MIMEType\": \"application/vnd.oci.image.layer.v1.tar+gzip\",\n            \"Digest\": \"sha256:2c0e15ad1ba57372508f93cf701e2bdc90600144ce2c8632264f4419976c55bf\",\n            \"Size\": 7105736,\n            \"Annotations\": null\n        },\n        {\n            \"MIMEType\": \"application/vnd.oci.image.layer.v1.tar+gzip\",\n            \"Digest\": \"sha256:0eb217d3f4f4dcd7419cfcb70a77645d271ed768e88ef136ab49abd56bf478e3\",\n            \"Size\": 392970938,\n            \"Annotations\": null\n        },\n        {\n            \"MIMEType\": \"application/vnd.oci.image.layer.v1.tar+gzip\",\n            \"Digest\": \"sha256:4f4fb700ef54461cfa02571ae0db9a0dc1e0cdb5577484a6d75e68dc38e8acc1\",\n            \"Size\": 32,\n            \"Annotations\": null\n        }\n    ],\n    \"Env\": [\n        \"PATH=/app/.venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\",\n        \"DEBIAN_FRONTEND=noninteractive\",\n        \"PYTHONUNBUFFERED=1\",\n        \"PIP_NO_CACHE_DIR=1\",\n        \"WORKSPACE_DIR=/workspace\",\n        \"VIRTUAL_ENV=/app/.venv\"\n    ]\n}\n",
+  "stdout": "{\n    \"Name\": \"docker.io/armswdev/arm-mcp\",\n    \"Digest\": \"\",\n    \"RepoTags\": [\n        \"latest\"\n    ],\n    \"Created\": \"\",\n    \"DockerVersion\": \"\",\n    \"Labels\": {\n        \"org.opencontainers.image.ref.name\": \"ubuntu\",\n        \"org.opencontainers.image.version\": \"24.04\"\n    },\n    \"Architecture\": \"arm64\",\n    \"Os\": \"linux\",\n    \"Layers\": [\n        \"\",\n        \"\",\n        \"\",\n        \"\",\n        \"\",\n        \"\",\n        \"\"\n    ],\n    \"LayersData\": [\n        {\n            \"MIMEType\": \"application/vnd.oci.image.layer.v1.tar+gzip\",\n            \"Digest\": \"\",\n            \"Size\": 28861712,\n            \"Annotations\": null\n        },\n        {\n            \"MIMEType\": \"application/vnd.oci.image.layer.v1.tar+gzip\",\n            \"Digest\": \"\",\n            \"Size\": 142025708,\n            \"Annotations\": null\n        },\n        {\n            \"MIMEType\": \"application/vnd.oci.image.layer.v1.tar+gzip\",\n            \"Digest\": \"\",\n            \"Size\": 107240731,\n            \"Annotations\": null\n        },\n        {\n            \"MIMEType\": \"application/vnd.oci.image.layer.v1.tar+gzip\",\n            \"Digest\": \"\",\n            \"Size\": 1180,\n            \"Annotations\": null\n        },\n        {\n            \"MIMEType\": \"application/vnd.oci.image.layer.v1.tar+gzip\",\n            \"Digest\": \"\",\n            \"Size\": 7105736,\n            \"Annotations\": null\n        },\n        {\n            \"MIMEType\": \"application/vnd.oci.image.layer.v1.tar+gzip\",\n            \"Digest\": \"\",\n            \"Size\": 392970938,\n            \"Annotations\": null\n        },\n        {\n            \"MIMEType\": \"application/vnd.oci.image.layer.v1.tar+gzip\",\n            \"Digest\": \"\",\n            \"Size\": 32,\n            \"Annotations\": null\n        }\n    ],\n    \"Env\": [\n        \"PATH=/app/.venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\",\n        \"DEBIAN_FRONTEND=noninteractive\",\n        \"PYTHONUNBUFFERED=1\",\n        \"PIP_NO_CACHE_DIR=1\",\n        \"WORKSPACE_DIR=/workspace\",\n        \"VIRTUAL_ENV=/app/.venv\"\n    ]\n}\n",
   "stderr": "",
   "cmd": [
     "skopeo",
@@ -118,6 +118,9 @@ CHECK_MIGRATE_EASE_TOOL_REQUEST = {
                 },
             },
         }
+'''TODO: Need to use a user-controlled repo with static example for testing to check more detailed response params. 
+For now, only status field is asserted in test to avoid mismatches due to dynamic fields.
+Sample response below for reference -
 EXPECTED_CHECK_MIGRATE_EASE_TOOL_RESPONSE = {
   "status": "success",
   "returncode": 0,
@@ -192,7 +195,9 @@ EXPECTED_CHECK_MIGRATE_EASE_TOOL_RESPONSE = {
     "total_issue_count": 0
   },
   "output_file_deleted": True
-}
+}'''
+
+EXPECTED_CHECK_MIGRATE_EASE_TOOL_RESPONSE_STATUS = "success"
 
 CHECK_SYSREPORT_TOOL_REQUEST = {
             "jsonrpc": "2.0",

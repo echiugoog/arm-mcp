@@ -124,7 +124,7 @@ After updating the configuration, restart your MCP client to load the Arm MCP se
 ### Pre-requisites
 
 - Build the mcp server docker image
-- Install the required test packages using - `pip install -r tests/requirements.txt`
+- Install the required test packages using - `pip install -r tests/requirements.txt` within the `mcp_local` directory.
 
 ### Testing Steps
 

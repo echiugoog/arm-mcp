@@ -39,6 +39,12 @@ def _read_docker_frame(sock, timeout: float) -> bytes:
             continue
         header += chunk
 
+    # Docker frame format can be either in multiplexed (each frame prefixed with an 8-byte header) or raw mode.
+    # byte 0: stream type (0x01 = stdout, 0x02 = stderr)
+    # bytes 1-3: Reserved, always \x00\x00\x00
+    # bytes 4-7: Payload size (big-endian uint32)
+    # This checks on header if frame is multiplexed or in raw mode. If bytes 1-3 are not zeros, the data is likely raw/unframed output, 
+    # so the function returns it directly instead of trying to parse frame headers and extract payloads
     if header[1:4] != b"\x00\x00\x00":
         return header
 
@@ -126,20 +132,26 @@ def test_mcp_stdio_transport_responds():
         #Check Skopeo Tool Test
         raw_socket.sendall(_encode_mcp_message(constants.CHECK_SKOPEO_REQUEST))
         check_skopeo_response = _read_response(3, timeout=60)
-        assert check_skopeo_response.get("result")["structuredContent"] == constants.EXPECTED_CHECK_SKOPEO_RESPONSE, "Test Failed: MCP check_skopeo tool failed: content mismatch. Expected: {}, Received: {}".format(json.dumps(constants.EXPECTED_CHECK_SKOPEO_RESPONSE,indent=2), json.dumps(check_skopeo_response.get("result")["structuredContent"],indent=2))
+        actual_architecture = json.loads(check_skopeo_response.get("result")["structuredContent"]["stdout"]).get("Architecture")
+        actual_os = json.loads(check_skopeo_response.get("result")["structuredContent"]["stdout"]).get("Os")
+        actual_status = check_skopeo_response.get("result")["structuredContent"].get("status")
+        assert actual_architecture == json.loads(constants.EXPECTED_CHECK_SKOPEO_RESPONSE["stdout"]).get("Architecture"), "Test Failed: MCP check_skopeo tool failed: Architecture mismatch. Expected: {}, Received: {}".format(constants.EXPECTED_CHECK_SKOPEO_RESPONSE["Architecture"], actual_architecture)
+        assert actual_os == json.loads(constants.EXPECTED_CHECK_SKOPEO_RESPONSE["stdout"]).get("Os"), "Test Failed: MCP check_skopeo tool failed: Os mismatch. Expected: {}, Received: {}".format(constants.EXPECTED_CHECK_SKOPEO_RESPONSE["Os"], actual_os)
+        assert actual_status == constants.EXPECTED_CHECK_SKOPEO_RESPONSE["status"], "Test Failed: MCP check_skopeo tool failed: Status mismatch. Expected: {}, Received: {}".format(constants.EXPECTED_CHECK_SKOPEO_RESPONSE["status"], actual_status)
         print("\n***Test Passed: MCP check_skopeo tool succeeded")
 
         #Check NGINX Query Test
         raw_socket.sendall(_encode_mcp_message(constants.CHECK_NGINX_REQUEST))
         check_nginx_response = _read_response(4, timeout=60)
-        assert any(item in str(check_nginx_response.get("result")["structuredContent"]) for item in constants.EXPECTED_CHECK_NGINX_RESPONSE), "Test Failed: MCP check_nginx tool failed: content mismatch., Expected one of: {}, Received: {}".format(json.dumps(constants.EXPECTED_CHECK_NGINX_RESPONSE,indent=2), json.dumps(check_nginx_response.get("result")["structuredContent"],indent=2))
+        urls = json.dumps(check_nginx_response["result"]["structuredContent"])
+        assert any(expected in urls for expected in constants.EXPECTED_CHECK_NGINX_RESPONSE), "Test Failed: MCP check_nginx tool failed: content mismatch., Expected one of: {}, Received: {}".format(json.dumps(constants.EXPECTED_CHECK_NGINX_RESPONSE,indent=2), json.dumps(check_nginx_response.get("result")["structuredContent"],indent=2))
         print("\n***Test Passed: MCP check_nginx tool succeeded")
 
         #Check Migrate Ease Tool Test
         raw_socket.sendall(_encode_mcp_message(constants.CHECK_MIGRATE_EASE_TOOL_REQUEST))
         check_migrate_ease_tool_response = _read_response(5, timeout=60)
         #assert only the status field to avoid mismatches due to dynamic fields
-        assert check_migrate_ease_tool_response.get("result")["structuredContent"]["status"] == constants.EXPECTED_CHECK_MIGRATE_EASE_TOOL_RESPONSE["status"], "Test Failed: MCP check_migrate_ease_tool tool failed: status mismatch. Expected: {}, Received: {}".format(constants.EXPECTED_CHECK_MIGRATE_EASE_TOOL_RESPONSE["status"], check_migrate_ease_tool_response.get("result")["structuredContent"]["status"])
+        assert check_migrate_ease_tool_response.get("result")["structuredContent"]["status"] == constants.EXPECTED_CHECK_MIGRATE_EASE_TOOL_RESPONSE_STATUS, "Test Failed: MCP check_migrate_ease_tool tool failed: status mismatch. Expected: {}, Received: {}".format(constants.EXPECTED_CHECK_MIGRATE_EASE_TOOL_RESPONSE_STATUS, check_migrate_ease_tool_response.get("result")["structuredContent"]["status"])
         print("\n***Test Passed: MCP check_migrate_ease_tool tool succeeded")
 
         #Check Sysreport Tool Test
