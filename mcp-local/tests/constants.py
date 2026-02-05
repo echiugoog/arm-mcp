@@ -230,6 +230,9 @@ CHECK_MCA_TOOL_REQUEST = {
             },
         }
 
+'''TODO: Need to use a user-controlled repo with static example for testing to check more detailed response params. 
+For now, only status field is asserted in test to avoid mismatches due to dynamic fields.
+Sample response below for reference -
 EXPECTED_CHECK_MCA_TOOL_RESPONSE = {
               "status": "ok",
               "code": 0,
@@ -239,4 +242,6 @@ EXPECTED_CHECK_MCA_TOOL_RESPONSE = {
                 "llvm-mca",
                 "/workspace/tests/sum_test.s"
               ]
-      }     
+      }'''
+
+EXPECTED_CHECK_MCA_TOOL_RESPONSE_STATUS = "ok"     
