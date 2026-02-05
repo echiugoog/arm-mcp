@@ -28,13 +28,13 @@ If you would prefer to use a pre-built, multi-arch image, the official image can
 From the root of this repository:
 
 ```bash
-docker buildx build --platform linux/arm64,linux/amd64 -f mcp-local/Dockerfile -t arm-mcp mcp-local
+docker buildx build --platform linux/arm64,linux/amd64 -f mcp-local/Dockerfile -t arm-mcp .
 ```
 
 For a single-platform build (faster):
 
 ```bash
-docker buildx build -f mcp-local/Dockerfile -t arm-mcp mcp-local
+docker buildx build -f mcp-local/Dockerfile -t arm-mcp .
 ```
 
 ### 2. Configure Your MCP Client
