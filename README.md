@@ -28,13 +28,13 @@ If you would prefer to use a pre-built, multi-arch image, the official image can
 From the root of this repository:
 
 ```bash
-docker buildx build --platform linux/arm64,linux/amd64 -f mcp-local/Dockerfile -t arm-mcp mcp-local
+docker buildx build --platform linux/arm64,linux/amd64 -f mcp-local/Dockerfile -t arm-mcp .
 ```
 
 For a single-platform build (faster):
 
 ```bash
-docker buildx build -f mcp-local/Dockerfile -t arm-mcp mcp-local
+docker buildx build -f mcp-local/Dockerfile -t arm-mcp .
 ```
 
 ### 2. Configure Your MCP Client
@@ -118,6 +118,19 @@ After updating the configuration, restart your MCP client to load the Arm MCP se
   - `data/`: Pre-built knowledge base (embeddings and metadata)
   - `Dockerfile`: Multi-stage Docker build
 - **`embedding-generation/`**: Scripts for regenerating the knowledge base from source documents
+
+## Integration Testing
+
+### Pre-requisites
+
+- Build the mcp server docker image
+- Install the required test packages using - `pip install -r tests/requirements.txt` within the `mcp_local` directory.
+
+### Testing Steps
+
+- Run the test script - `python -m pytest -s tests/test_mcp.py`
+- Check if following 2 docker containers have started - **mcp server** & **testcontainer**
+- All tests should pass without any errors. Warnings can be ignored.
 
 ## Troubleshooting
 
