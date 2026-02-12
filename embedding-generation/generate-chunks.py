@@ -12,18 +12,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import requests
-from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
-from bs4 import BeautifulSoup
 import argparse
-import sys, os
+import sys
+import os
 import re
 import uuid
 import yaml
 import csv
 import datetime
 import json
+
+import boto3
+from botocore.exceptions import NoCredentialsError, ClientError
+from bs4 import BeautifulSoup
+import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
+
 
 # Create a session with retry logic for resilient HTTP requests
 def create_retry_session(retries=5, backoff_factor=1, status_forcelist=(500, 502, 503, 504)):
@@ -45,10 +50,6 @@ def create_retry_session(retries=5, backoff_factor=1, status_forcelist=(500, 502
 # Global session for all HTTP requests
 http_session = create_retry_session()
 
-# Boto3 for S3 operations
-import boto3
-from botocore.exceptions import NoCredentialsError, ClientError
-
 
 def ensure_intrinsic_chunks_from_s3(local_folder='intrinsic_chunks',
                                     s3_bucket='arm-github-copilot-extension',
@@ -57,7 +58,6 @@ def ensure_intrinsic_chunks_from_s3(local_folder='intrinsic_chunks',
     Ensure the local 'intrinsic_chunks' folder exists and is populated with files from S3.
     If the folder does not exist, create it and download all files from the S3 prefix.
     """
-    import os
     if not os.path.exists(local_folder):
         os.makedirs(local_folder, exist_ok=True)
         print(f"Created local folder: {local_folder}")
@@ -86,9 +86,7 @@ def ensure_intrinsic_chunks_from_s3(local_folder='intrinsic_chunks',
 To fix:
 1. Prevent multiple learning paths from being used (compare URLs to existing chunks OR delete overlaps)
 2. Learning Path titles must come from index page...send through function along with Graviton.
-
 '''
-
 
 yaml_dir = 'yaml_data'
 details_file = 'info/chunk_details.csv'
@@ -97,7 +95,6 @@ chunk_index = 1
 
 # Global var to prevent duplication entries from cross platform learning paths
 cross_platform_lps_dont_duplicate = []
-
 
 # Increase the file size limit, which defaults to '131,072'
 csv.field_size_limit(10**9) #1,000,000,000 (1 billion), smaller than 64-bit space but avoids 'python overflowerror'
@@ -194,7 +191,6 @@ def createEcosystemDashboardChunks():
         chunkSaveAndTrack(url,chunk) 
 
     return 
-
 
 
 def createIntrinsicsDatabaseChunks():
@@ -315,7 +311,6 @@ def createIntrinsicsDatabaseChunks():
     '''
 
 
-
 def processLearningPath(url,type):
     github_raw_link = "https://raw.githubusercontent.com/ArmDeveloperEcosystem/arm-learning-paths/refs/heads/production/content"
     site_link = "https://learn.arm.com"
@@ -424,17 +419,29 @@ def createLearningPathChunks():
     learn_url = "https://learn.arm.com/"
     response = http_session.get(learn_url, timeout=60)
     soup = BeautifulSoup(response.text, 'html.parser')
-    for card in soup.find_all(class_='main-topic-card'):
-        if 'tool-install' == card.get('id'): 
-            ig_rel_path = card.get('link')
-            processLearningPath(ig_rel_path,"Install Guide")
+    
+    # Process Install Guides separately (directly from /install-guides page)
+    processLearningPath("/install-guides", "Install Guide")
+    
+    # Find category links - main-topic-card elements are now wrapped in <a> tags
+    # Look for <a> tags that contain main-topic-card divs
+    for a_tag in soup.find_all('a', href=True):
+        card = a_tag.find(class_='main-topic-card')
+        if card:
+            cat_rel_path = a_tag.get('href')
+            if cat_rel_path is None or cat_rel_path.startswith('http'):
+                continue
+            # Skip non-learning-path links (like /tag/ml/ or install guides button)
+            if not cat_rel_path.startswith('/learning-paths/'):
+                continue
             
-        else:         
-            cat_rel_path = card.get('link')
-            cat_response = http_session.get(learn_url+cat_rel_path, timeout=60)
+            cat_response = http_session.get(learn_url.rstrip('/') + cat_rel_path, timeout=60)
             cat_soup = BeautifulSoup(cat_response.text, 'html.parser')
             for lp_card in cat_soup.find_all(class_="path-card"):
-                lp_url = learn_url + lp_card.get('link')
+                lp_link = lp_card.get('link')
+                if lp_link is None:
+                    continue
+                lp_url = learn_url.rstrip('/') + lp_link
                 # Chunking step
                 processLearningPath(lp_url, "Learning Path")
 
@@ -461,6 +468,7 @@ def readInCSV(csv_file):
             csv_length += 1
 
     return csv_dict, csv_length
+
 
 def getMarkdownGitHubURLsFromPage(url):
     GH_urls = []
@@ -522,6 +530,7 @@ def obtainMarkdownContentFromGitHubMDFile(gh_url):
     md_content = md_content[md_content.find('---', 3)  + 3:].strip()  # +3 to remove the '---' and strip to remove leading/trailing whitespace
 
     return md_content
+
 
 def obtainTextSnippets__Markdown(content, min_words=300, max_words=500, min_final_words=200):
     """Split content into chunks based on headers and word count constraints."""
@@ -620,6 +629,7 @@ def createChunk(text_snippet,WEBSITE_url,keywords,title):
 
     return chunk
 
+
 def printChunks(chunks):
     for chunk_dict in chunks:
         print('='*100)
@@ -688,7 +698,6 @@ def chunkSaveAndTrack(url,chunk):
     # Record chunk
     recordChunk()
     print(f"{file_name} === {chunk.title}")
-
 
 
 def main():
